@@ -1,0 +1,9 @@
+{
+  "name": "pocket",
+  "version": "0.0.1",
+  "description": "Climbing gym slot scraper",
+  "main": "index.js",
+  "repository": "https://github.com/triomic/climbwhere.sg.git",
+  "author": "Ravern Koh <ravernkoh@gmail.com>",
+  "license": "MIT"
+}
