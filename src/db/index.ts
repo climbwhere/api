@@ -1,7 +1,7 @@
 import Knex from "knex";
 
 import config from "../../knexfile";
-import { getGym, getGymBySlug } from "./queries/gyms";
+import { getAllGyms, getGym, getGymBySlug } from "./queries/gyms";
 import { createSession } from "./queries/sessions";
 
 import type { Database } from "./types";
@@ -16,6 +16,7 @@ export const connect = (): Database => {
       create: createSession(knex),
     },
     gyms: {
+      all: getAllGyms(knex),
       get: getGym(knex),
       getBySlug: getGymBySlug(knex),
     },

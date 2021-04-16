@@ -1,6 +1,10 @@
 import type { Gym } from "../models";
 import type { Knex } from "knex";
 
+export const getAllGyms = (knex: Knex) => async (): Promise<Gym[]> => {
+  return knex("gyms");
+};
+
 export const getGym = (knex: Knex) => async (id: string): Promise<Gym> => {
   return knex("gyms").where({ id }).first();
 };
