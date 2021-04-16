@@ -2,6 +2,7 @@ import moment from "moment-timezone";
 
 import type { Context } from "../context";
 import type { CreateSession, Gym } from "../../db/models";
+import type { Session } from "../../db/models";
 
 type BoulderPlusSession = {
   title: string;
@@ -9,14 +10,28 @@ type BoulderPlusSession = {
   end: string;
 };
 
-const transformSession = (
+const scrapeSession = async (
+  ctx: Context,
   gym: Gym,
-  session: BoulderPlusSession,
-): CreateSession => {
-  const start = moment(session.start).toDate();
-  const end = moment(session.end).toDate();
+  boulderPlusSession: BoulderPlusSession,
+): Promise<void> => {
+  const starts_at = moment(boulderPlusSession.start).toDate();
+  const ends_at = moment(boulderPlusSession.end).toDate();
 
-  const spacesMatches = /(\d+) spaces/.exec(session.title);
+  try {
+    await ctx.db("sessions").insert({ gym_id: gym.id, starts_at, ends_at });
+  } catch (error) {
+    if (error.code !== "23505") {
+      throw error;
+    }
+  }
+
+  const session: Session = await ctx
+    .db("sessions")
+    .where({ gym_id: gym.id, starts_at })
+    .first();
+
+  const spacesMatches = /(\d+) spaces/.exec(boulderPlusSession.title);
   let spaces;
   if (!spacesMatches) {
     // No matches because slot is "Full".
@@ -26,16 +41,11 @@ const transformSession = (
     spaces = parseInt(spacesMatches[1], 10);
   }
 
-  return {
-    start,
-    end,
-    gym_id: gym.id,
-    spaces,
-  };
+  await ctx.db("snapshots").insert({ session_id: session.id, spaces });
 };
 
 const scrape = async (ctx: Context): Promise<void> => {
-  const gym = await ctx.db.gyms.getBySlug("boulder-plus");
+  const gym: Gym = await ctx.db("gyms").where({ slug: "boulder-plus" }).first();
   if (!gym) {
     return;
   }
@@ -49,14 +59,8 @@ const scrape = async (ctx: Context): Promise<void> => {
     },
   });
 
-  const sessions = await Promise.all<CreateSession>(
-    res.data.map((session) => transformSession(gym, session)),
-  );
-
-  await Promise.all(
-    sessions.map((session) =>
-      ctx.db.sessions.createOrUpdateByGymAndStart(session),
-    ),
+  await Promise.all<CreateSession>(
+    res.data.map((session) => scrapeSession(ctx, gym, session)),
   );
 };
 

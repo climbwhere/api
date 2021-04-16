@@ -1,10 +1,3 @@
-export type { CreateSession, Session, SessionWithGymSlug } from "./session";
-
-export type Gym = {
-  id: string;
-  slug: string;
-  name: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-};
+export type { CreateSession, Session } from "./session";
+export type { CreateSnapshot, Snapshot } from "./snapshot";
+export type { Gym } from "./gym";

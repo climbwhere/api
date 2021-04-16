@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
-import type { Database } from "../db";
+import type { Knex } from "knex";
 
 export type Context = {
-  db: Database;
+  db: Knex;
   http: AxiosInstance;
 };
