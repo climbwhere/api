@@ -2,7 +2,7 @@ import Knex from "knex";
 
 import config from "../../knexfile";
 import { getAllGyms, getGym, getGymBySlug } from "./queries/gyms";
-import { createSession } from "./queries/sessions";
+import { createSession, getAllSessionsWithGymSlugs } from "./queries/sessions";
 
 import type { Database } from "./types";
 
@@ -13,6 +13,7 @@ export const connect = (): Database => {
   return {
     knex,
     sessions: {
+      allWithGymSlugs: getAllSessionsWithGymSlugs(knex),
       create: createSession(knex),
     },
     gyms: {

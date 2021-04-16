@@ -1,9 +1,10 @@
 import type { Knex } from "knex";
-import { CreateSession, Session, Gym } from "./models";
+import { CreateSession, Session, Gym, SessionWithGymSlug } from "./models";
 
 export type Database = {
   knex: Knex;
   sessions: {
+    allWithGymSlugs: () => Promise<SessionWithGymSlug[]>;
     create: (session: CreateSession) => Promise<Session>;
   };
   gyms: {
