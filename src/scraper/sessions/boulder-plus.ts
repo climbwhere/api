@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 
 import type { Context } from "../context";
-import type { CreateSession } from "../../db/models";
+import type { CreateSession, Gym } from "../../db/models";
 
 type BoulderPlusSession = {
   title: string;
@@ -9,10 +9,26 @@ type BoulderPlusSession = {
   end: string;
 };
 
-const transformSession = (
+const insertOrUpdateSession = async (
+  ctx: Context,
+  gym: Gym,
+  session: CreateSession,
+) => {
+  const updatedSession = await ctx.db.sessions.updateByGymAndStart(
+    gym.id,
+    session.start,
+    session,
+  );
+  if (!updatedSession) {
+    await ctx.db.sessions.create(session);
+  }
+};
+
+const scrapeSession = async (
+  ctx: Context,
+  gym: Gym,
   session: BoulderPlusSession,
-  gym_id: string,
-): CreateSession => {
+): Promise<void> => {
   const start = moment(session.start).toDate();
   const end = moment(session.end).toDate();
 
@@ -26,12 +42,12 @@ const transformSession = (
     spaces = parseInt(spacesMatches[1], 10);
   }
 
-  return {
-    gym_id,
+  await insertOrUpdateSession(ctx, gym, {
+    gym_id: gym.id,
     start,
     end,
     spaces,
-  };
+  });
 };
 
 const scrape = async (ctx: Context): Promise<void> => {
@@ -49,11 +65,9 @@ const scrape = async (ctx: Context): Promise<void> => {
     },
   });
 
-  const sessions = await Promise.all<CreateSession>(
-    res.data.map((session) => transformSession(session, gym.id)),
+  await Promise.all(
+    res.data.map((session) => scrapeSession(ctx, gym, session)),
   );
-
-  await Promise.all(sessions.map((session) => ctx.db.sessions.create(session)));
 };
 
 export default scrape;
