@@ -4,7 +4,9 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "allowJs": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "rootDir": "src/",
+    "outDir": "dist/"
   },
   "include": [
     "src/**/*"

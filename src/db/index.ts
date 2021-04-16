@@ -1,6 +1,6 @@
 import knex from "knex";
 
-import config from "../../knexfile";
+import config from "./config";
 
 import type { Knex } from "knex";
 
