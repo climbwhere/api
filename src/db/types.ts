@@ -5,11 +5,7 @@ export type Database = {
   knex: Knex;
   sessions: {
     allWithGymSlugs: () => Promise<SessionWithGymSlug[]>;
-    updateByGymAndStart: (
-      gymId: string,
-      start: Date,
-      session: CreateSession,
-    ) => Promise<Session>;
+    createOrUpdateByGymAndStart: (session: CreateSession) => Promise<Session>;
     create: (session: CreateSession) => Promise<Session>;
   };
   gyms: {

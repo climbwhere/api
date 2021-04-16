@@ -9,26 +9,10 @@ type BoulderPlusSession = {
   end: string;
 };
 
-const insertOrUpdateSession = async (
-  ctx: Context,
-  gym: Gym,
-  session: CreateSession,
-) => {
-  const updatedSession = await ctx.db.sessions.updateByGymAndStart(
-    gym.id,
-    session.start,
-    session,
-  );
-  if (!updatedSession) {
-    await ctx.db.sessions.create(session);
-  }
-};
-
-const scrapeSession = async (
-  ctx: Context,
+const transformSession = (
   gym: Gym,
   session: BoulderPlusSession,
-): Promise<void> => {
+): CreateSession => {
   const start = moment(session.start).toDate();
   const end = moment(session.end).toDate();
 
@@ -42,12 +26,12 @@ const scrapeSession = async (
     spaces = parseInt(spacesMatches[1], 10);
   }
 
-  await insertOrUpdateSession(ctx, gym, {
-    gym_id: gym.id,
+  return {
     start,
     end,
+    gym_id: gym.id,
     spaces,
-  });
+  };
 };
 
 const scrape = async (ctx: Context): Promise<void> => {
@@ -65,8 +49,14 @@ const scrape = async (ctx: Context): Promise<void> => {
     },
   });
 
+  const sessions = await Promise.all<CreateSession>(
+    res.data.map((session) => transformSession(gym, session)),
+  );
+
   await Promise.all(
-    res.data.map((session) => scrapeSession(ctx, gym, session)),
+    sessions.map((session) =>
+      ctx.db.sessions.createOrUpdateByGymAndStart(session),
+    ),
   );
 };
 
