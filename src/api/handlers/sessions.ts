@@ -6,10 +6,6 @@ export const index: Handler = (ctx: Context) => async (req, res) => {
     .db("snapshots")
     .join("sessions", "sessions.id", "snapshots.session_id")
     .join("gyms", "gyms.id", "sessions.gym_id")
-    .orderBy([
-      { column: "sessions.starts_at", order: "asc" },
-      { column: "snapshots.created_at", order: "desc" },
-    ])
     .groupBy(
       "sessions.id",
       "sessions.starts_at",
@@ -21,6 +17,7 @@ export const index: Handler = (ctx: Context) => async (req, res) => {
       "gyms.phone",
       "gyms.email",
     )
+    .orderBy("sessions.starts_at", "asc")
     .select(
       "sessions.id",
       "sessions.starts_at",
