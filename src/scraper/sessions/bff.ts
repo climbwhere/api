@@ -31,7 +31,7 @@ function parseXML(xml, i): BFFSession[] {
       minute: startTime.get("minute"),
       second: startTime.get("second"),
     });
-    const starts_at = moment(date.toDate()).toDate();
+    const starts_at = moment(date.toDate()).startOf("minute").toDate();
     const ends_at = moment(starts_at).add(3, "hours").toDate();
     const spaces = $$("div.num-slots-available-container").text().split(" ")[0];
     // Add scraped information to acc
