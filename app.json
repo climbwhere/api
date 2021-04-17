@@ -1,0 +1,8 @@
+{
+  "cron": [
+    {
+      "command": "yarn scrape",
+      "schedule": "*/2 * * * *"
+    }
+  ]
+}
