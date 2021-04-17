@@ -4,10 +4,10 @@ import FormData from "form-data";
 import cheerio from "cheerio";
 import { flatten } from "lodash";
 
-import type { Session } from "../../db/models/session";
 import type { Moment } from "moment-timezone";
-import { Context } from "../context";
-import { Gym } from "../../db/models";
+import type { Session } from "../../db/models/session";
+import type { Context } from "../context";
+import type { Gym } from "../../db/models";
 
 type BFFSession = {
   starts_at: Date;
