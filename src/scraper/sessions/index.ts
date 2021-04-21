@@ -4,7 +4,7 @@ import bff from "./bff";
 import oyeyo from "./oyeyo";
 import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
-import fitbloc from "./fitbloc";
+// import fitbloc from "./fitbloc";
 
 import type { Context } from "../context";
 
@@ -16,7 +16,7 @@ const SCRAPERS = [
   { slug: "lighthouse", scrape: lighthouse },
   { slug: "z-vertigo", scrape: zVertigo },
   { slug: "boulder-world", scrape: boulderWorld },
-  { slug: "fitbloc", scrape: fitbloc },
+  // { slug: "fitbloc", scrape: fitbloc },
 ];
 
 const scrape = async (ctx: Context): Promise<void> => {

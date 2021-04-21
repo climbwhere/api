@@ -4,6 +4,6 @@ import type { Browser } from "puppeteer";
 
 export type Context = {
   db: Knex;
-  browser: Browser;
+  // browser: Browser;
   http: AxiosInstance;
 };
