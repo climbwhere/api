@@ -4,6 +4,7 @@ import bff from "./bff";
 import oyeyo from "./oyeyo";
 import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
+import fitbloc from "./fitbloc";
 
 import type { Context } from "../context";
 import { Session } from "../../db/models";
@@ -25,6 +26,7 @@ const SCRAPERS = [
   { slug: "lighthouse", scrape: lighthouse },
   { slug: "z-vertigo", scrape: zVertigo },
   { slug: "boulder-world", scrape: boulderWorld },
+  { slug: "fitbloc", scrape: fitbloc },
 ];
 
 const scrape = async (ctx: Context): Promise<Result> => {

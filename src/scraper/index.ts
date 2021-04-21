@@ -1,13 +1,15 @@
 import "./config";
 
 import axios from "axios";
+import puppeteer from "puppeteer";
 
 import { connect } from "../db";
 import gyms from "./gyms";
 import sessions from "./sessions";
 
 import type { Context } from "./context";
-import type { Session } from "../db/models/session";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const SCRAPERS = [
   { resource: "gyms", scrape: gyms },
@@ -16,9 +18,16 @@ const SCRAPERS = [
 
 const main = async () => {
   const db = connect();
+
+  const browser = await puppeteer.launch({
+    headless: isProduction,
+    defaultViewport: null,
+    args: isProduction ? ["--no-sandbox"] : [],
+  });
+
   const ctx: Context = {
     db,
-    // browser,
+    browser,
     http: axios,
   };
 
