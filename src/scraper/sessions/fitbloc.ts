@@ -1,7 +1,7 @@
 import moment from "moment";
 
-import { Gym } from "../../db/models";
-import type { Session } from "../../db/models/session";
+import type { Gym, Session } from "../../db/models";
+import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 import type { Context } from "../context";
 
 type FitblocSession = {
@@ -10,7 +10,7 @@ type FitblocSession = {
   spaces: number;
 };
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Session[]> => {
   const gym: Gym = await ctx.db("gyms").where({ slug: "fitbloc" }).first();
   if (!gym) {
     return;
@@ -64,29 +64,13 @@ const scrape = async (ctx: Context): Promise<void> => {
     spaces: session.spaces,
   }));
 
-  await Promise.all(
-    fitblocSessions.map(async (fitblocSession) => {
-      try {
-        await ctx.db("sessions").insert({
-          gym_id: gym.id,
-          starts_at: fitblocSession.starts_at,
-          ends_at: fitblocSession.ends_at,
-        });
-      } catch (error) {
-        if (error.code !== "23505") {
-          throw error;
-        }
-      }
-
-      const session: Session = await ctx
-        .db("sessions")
-        .where({ gym_id: gym.id, starts_at: fitblocSession.starts_at })
-        .first();
-
-      await ctx
-        .db("snapshots")
-        .insert({ session_id: session.id, spaces: fitblocSession.spaces });
-    }),
+  return Promise.all(
+    fitblocSessions.map(async (fitblocSession) =>
+      insertOrUpdateSession(ctx.db, {
+        ...fitblocSession,
+        gym_id: gym.id,
+      }),
+    ),
   );
 };
 

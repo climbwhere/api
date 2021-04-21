@@ -2,9 +2,9 @@ import axios from "axios";
 import moment from "moment";
 import { flattenDeep } from "lodash";
 
-import type { Session } from "../../db/models/session";
+import type { Session, Gym } from "../../db/models";
 import { Context } from "../context";
-import { Gym } from "../../db/models";
+import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 
 type ZVertigoSession = {
   starts_at: Date;
@@ -80,7 +80,7 @@ async function processClass(klass) {
   return slots;
 }
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Session[]> => {
   const gym: Gym = await ctx.db("gyms").where({ slug: "z-vertigo" }).first();
   if (!gym) {
     return;
@@ -102,29 +102,13 @@ const scrape = async (ctx: Context): Promise<void> => {
 
   const sessions = flattenDeep<ZVertigoSession>(classes);
 
-  await Promise.all(
-    sessions.map(async (zVertigoSession) => {
-      try {
-        await ctx.db("sessions").insert({
-          gym_id: gym.id,
-          starts_at: zVertigoSession.starts_at,
-          ends_at: zVertigoSession.ends_at,
-        });
-      } catch (error) {
-        if (error.code !== "23505") {
-          throw error;
-        }
-      }
-
-      const session: Session = await ctx
-        .db("sessions")
-        .where({ gym_id: gym.id, starts_at: zVertigoSession.starts_at })
-        .first();
-
-      await ctx
-        .db("snapshots")
-        .insert({ session_id: session.id, spaces: zVertigoSession.spaces });
-    }),
+  return Promise.all(
+    sessions.map(async (zVertigoSession) =>
+      insertOrUpdateSession(ctx.db, {
+        ...zVertigoSession,
+        gym_id: gym.id,
+      }),
+    ),
   );
 };
 

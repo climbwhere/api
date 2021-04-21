@@ -5,9 +5,9 @@ import cheerio from "cheerio";
 import { flatten } from "lodash";
 
 import type { Moment } from "moment-timezone";
-import type { Session } from "../../db/models/session";
 import type { Context } from "../context";
-import type { Gym } from "../../db/models";
+import type { Gym, Session } from "../../db/models";
+import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 
 type BFFSession = {
   starts_at: Date;
@@ -63,7 +63,7 @@ function createRequest(date: Moment) {
   });
 }
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Session[]> => {
   const gym: Gym = await ctx.db("gyms").where({ slug: "bff" }).first();
   if (!gym) {
     return;
@@ -84,29 +84,10 @@ const scrape = async (ctx: Context): Promise<void> => {
     }),
   );
 
-  await Promise.all(
-    sessions.map(async (bffSession) => {
-      try {
-        await ctx.db("sessions").insert({
-          gym_id: gym.id,
-          starts_at: bffSession.starts_at,
-          ends_at: bffSession.ends_at,
-        });
-      } catch (error) {
-        if (error.code !== "23505") {
-          throw error;
-        }
-      }
-
-      const session: Session = await ctx
-        .db("sessions")
-        .where({ gym_id: gym.id, starts_at: bffSession.starts_at })
-        .first();
-
-      await ctx
-        .db("snapshots")
-        .insert({ session_id: session.id, spaces: bffSession.spaces });
-    }),
+  return Promise.all(
+    sessions.map(async (bffSession) =>
+      insertOrUpdateSession(ctx.db, { ...bffSession, gym_id: gym.id }),
+    ),
   );
 };
 

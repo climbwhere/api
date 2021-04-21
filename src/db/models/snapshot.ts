@@ -1,11 +1,5 @@
-export type CreateSnapshot = {
-  session_id: string;
-  spaces: number;
-};
-
 export type Snapshot = {
   id: string;
-  session_id: string;
-  spaces: number;
+  data: string;
   created_at: Date;
 };

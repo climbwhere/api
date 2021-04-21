@@ -8,18 +8,37 @@ import fitbloc from "./fitbloc";
 
 import type { Context } from "../context";
 
+// TODO: Pass slug through scraper arguments
 const SCRAPERS = [
-  boulderPlus,
-  bff,
-  oyeyo,
-  lighthouse,
-  zVertigo,
-  boulderWorld,
-  fitbloc,
+  { slug: "boulder-plus", scrape: boulderPlus },
+  { slug: "bff", scrape: bff },
+  { slug: "oyeyo", scrape: oyeyo },
+  { slug: "lighthouse", scrape: lighthouse },
+  { slug: "z-vertigo", scrape: zVertigo },
+  { slug: "boulder-world", scrape: boulderWorld },
+  { slug: "fitbloc", scrape: fitbloc },
 ];
 
 const scrape = async (ctx: Context): Promise<void> => {
-  await Promise.all(SCRAPERS.map((scrape) => scrape(ctx)));
+  const results = await Promise.all(
+    SCRAPERS.map(async ({ slug, scrape }) => {
+      try {
+        const data = await scrape(ctx);
+        return { slug, result: { data } };
+      } catch (error) {
+        return { slug, result: { error: { message: error.message } } };
+      }
+    }),
+  );
+
+  const sessions = {};
+  results.map((result) => {
+    sessions[result.slug] = result.result;
+  });
+
+  await ctx.db("snapshots").insert({
+    data: { sessions },
+  });
 };
 
 export default scrape;

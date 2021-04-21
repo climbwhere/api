@@ -2,9 +2,9 @@ import axios from "axios";
 import moment from "moment";
 import { flattenDeep } from "lodash";
 
-import type { Session } from "../../db/models/session";
+import type { Session, Gym } from "../../db/models";
 import type { Context } from "../context";
-import { Gym } from "../../db/models";
+import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 
 type BoulderWorldSession = {
   starts_at: Date;
@@ -90,7 +90,7 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
   return slots;
 }
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Session[]> => {
   const gym: Gym = await ctx
     .db("gyms")
     .where({ slug: "boulder-world" })
@@ -115,29 +115,13 @@ const scrape = async (ctx: Context): Promise<void> => {
 
   const sessions = flattenDeep<BoulderWorldSession>(classes);
 
-  await Promise.all(
-    sessions.map(async (boulderWorldSession) => {
-      try {
-        await ctx.db("sessions").insert({
-          gym_id: gym.id,
-          starts_at: boulderWorldSession.starts_at,
-          ends_at: boulderWorldSession.ends_at,
-        });
-      } catch (error) {
-        if (error.code !== "23505") {
-          throw error;
-        }
-      }
-
-      const session: Session = await ctx
-        .db("sessions")
-        .where({ gym_id: gym.id, starts_at: boulderWorldSession.starts_at })
-        .first();
-
-      await ctx
-        .db("snapshots")
-        .insert({ session_id: session.id, spaces: boulderWorldSession.spaces });
-    }),
+  return Promise.all(
+    sessions.map(async (boulderWorldSession) =>
+      insertOrUpdateSession(ctx.db, {
+        ...boulderWorldSession,
+        gym_id: gym.id,
+      }),
+    ),
   );
 };
 

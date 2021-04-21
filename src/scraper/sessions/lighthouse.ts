@@ -1,11 +1,12 @@
 import moment from "moment";
 import axios from "axios";
 
-import type { Gym } from "../../db/models/gym";
-import type { Session } from "../../db/models/session";
+import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
+
+import type { Gym, Session } from "../../db/models";
 import type { Context } from "../context";
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Session[]> => {
   const gym: Gym = await ctx.db("gyms").where({ slug: "lighthouse" }).first();
   if (!gym) {
     return;
@@ -40,29 +41,13 @@ const scrape = async (ctx: Context): Promise<void> => {
       spaces: session.max_attendance - session.registration_count,
     }));
 
-  await Promise.all(
-    sessions.map(async (lighthouseSession) => {
-      try {
-        await ctx.db("sessions").insert({
-          gym_id: gym.id,
-          starts_at: lighthouseSession.starts_at,
-          ends_at: lighthouseSession.ends_at,
-        });
-      } catch (error) {
-        if (error.code !== "23505") {
-          throw error;
-        }
-      }
-
-      const session: Session = await ctx
-        .db("sessions")
-        .where({ gym_id: gym.id, starts_at: lighthouseSession.starts_at })
-        .first();
-
-      await ctx
-        .db("snapshots")
-        .insert({ session_id: session.id, spaces: lighthouseSession.spaces });
-    }),
+  return Promise.all(
+    sessions.map(async (lighthouseSession) =>
+      insertOrUpdateSession(ctx.db, {
+        ...lighthouseSession,
+        gym_id: gym.id,
+      }),
+    ),
   );
 };
 

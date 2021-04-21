@@ -3,6 +3,7 @@ exports.up = (knex) => {
     t.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
     t.datetime("starts_at").notNullable();
     t.datetime("ends_at").notNullable();
+    t.integer("spaces").notNullable();
     t.uuid("gym_id").references("gyms.id").notNullable();
     t.unique(["starts_at", "gym_id"]);
   });
