@@ -4,10 +4,19 @@ import bff from "./bff";
 import oyeyo from "./oyeyo";
 import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
+import fitbloc from "./fitbloc";
 
 import type { Context } from "../context";
 
-const SCRAPERS = [boulderPlus, bff, oyeyo, lighthouse, zVertigo, boulderWorld];
+const SCRAPERS = [
+  boulderPlus,
+  bff,
+  oyeyo,
+  lighthouse,
+  zVertigo,
+  boulderWorld,
+  fitbloc,
+];
 
 const scrape = async (ctx: Context): Promise<void> => {
   await Promise.all(SCRAPERS.map((scrape) => scrape(ctx)));
