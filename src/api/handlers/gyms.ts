@@ -1,4 +1,6 @@
-import { Context } from "../context";
+import isUUID from "is-uuid";
+
+import type { Context } from "../context";
 import type { Handler } from "./types";
 
 export const index: Handler = (ctx: Context) => async (req, res) => {
@@ -9,6 +11,28 @@ export const index: Handler = (ctx: Context) => async (req, res) => {
   });
 };
 
+export const get: Handler = (ctx: Context) => async (req, res) => {
+  const { idOrSlug } = req.params;
+
+  const gym = isUUID.v4(idOrSlug)
+    ? await ctx.db("gyms").where({ id: idOrSlug }).first()
+    : await ctx.db("gyms").where({ slug: idOrSlug }).first();
+  if (!gym) {
+    res.status(404);
+    res.json({
+      error: {
+        message: "Gym not found.",
+      },
+    });
+    return;
+  }
+
+  res.json({
+    data: gym,
+  });
+};
+
 export default {
   index,
+  get,
 };

@@ -11,6 +11,7 @@ export const configure = (ctx: Context, app: Router): void => {
   app.use(json());
 
   app.get("/gyms", wrap(gyms.index(ctx)));
+  app.get("/gyms/:idOrSlug", wrap(gyms.get(ctx)));
 
   app.get("/sessions", wrap(sessions.index(ctx)));
 };

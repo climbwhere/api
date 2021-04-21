@@ -1,5 +1,3 @@
-import { flatten } from "lodash";
-
 import type { Context } from "../context";
 import type { Handler } from "./types";
 
