@@ -36,8 +36,8 @@ const scrapeSession = async (
   });
 };
 
-const scrape = async (ctx: Context): Promise<Session[]> => {
-  const gym: Gym = await ctx.db("gyms").where({ slug: "boulder-plus" }).first();
+const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
+  const gym: Gym = await ctx.db("gyms").where({ slug }).first();
   if (!gym) {
     return;
   }

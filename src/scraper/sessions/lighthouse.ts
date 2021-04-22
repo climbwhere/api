@@ -6,8 +6,8 @@ import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 import type { Gym, Session } from "../../db/models";
 import type { Context } from "../context";
 
-const scrape = async (ctx: Context): Promise<Session[]> => {
-  const gym: Gym = await ctx.db("gyms").where({ slug: "lighthouse" }).first();
+const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
+  const gym: Gym = await ctx.db("gyms").where({ slug }).first();
   if (!gym) {
     return;
   }

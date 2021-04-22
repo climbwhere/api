@@ -4,11 +4,20 @@ import bff from "./bff";
 import oyeyo from "./oyeyo";
 import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
-// import fitbloc from "./fitbloc";
 
 import type { Context } from "../context";
+import { Session } from "../../db/models";
 
-// TODO: Pass slug through scraper arguments
+type Result = {
+  [slug: string]:
+    | {
+        data: Session[];
+      }
+    | {
+        error: { message: string };
+      };
+};
+
 const SCRAPERS = [
   { slug: "boulder-plus", scrape: boulderPlus },
   { slug: "bff", scrape: bff },
@@ -16,29 +25,26 @@ const SCRAPERS = [
   { slug: "lighthouse", scrape: lighthouse },
   { slug: "z-vertigo", scrape: zVertigo },
   { slug: "boulder-world", scrape: boulderWorld },
-  // { slug: "fitbloc", scrape: fitbloc },
 ];
 
-const scrape = async (ctx: Context): Promise<void> => {
+const scrape = async (ctx: Context): Promise<Result> => {
   const results = await Promise.all(
-    SCRAPERS.map(async ({ slug, scrape }) => {
+    SCRAPERS.map(async ({ scrape, slug }) => {
       try {
-        const data = await scrape(ctx);
-        return { slug, result: { data } };
+        const sessions = await scrape(ctx, slug);
+        return { slug, data: sessions };
       } catch (error) {
-        return { slug, result: { error: { message: error.message } } };
+        return { slug, error: { message: error.message } };
       }
     }),
   );
 
   const sessions = {};
-  results.map((result) => {
-    sessions[result.slug] = result.result;
+  results.forEach(({ slug, ...result }) => {
+    sessions[slug] = result;
   });
 
-  await ctx.db("snapshots").insert({
-    data: { sessions },
-  });
+  return sessions;
 };
 
 export default scrape;

@@ -63,8 +63,8 @@ function createRequest(date: Moment) {
   });
 }
 
-const scrape = async (ctx: Context): Promise<Session[]> => {
-  const gym: Gym = await ctx.db("gyms").where({ slug: "bff" }).first();
+const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
+  const gym: Gym = await ctx.db("gyms").where({ slug }).first();
   if (!gym) {
     return;
   }

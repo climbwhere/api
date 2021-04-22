@@ -91,8 +91,8 @@ async function processClass(klass): Promise<OyeyoSession[][]> {
   return staffs;
 }
 
-const scrape = async (ctx: Context): Promise<Session[]> => {
-  const gym: Gym = await ctx.db("gyms").where({ slug: "oyeyo" }).first();
+const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
+  const gym: Gym = await ctx.db("gyms").where({ slug }).first();
   if (!gym) {
     return;
   }

@@ -90,11 +90,8 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
   return slots;
 }
 
-const scrape = async (ctx: Context): Promise<Session[]> => {
-  const gym: Gym = await ctx
-    .db("gyms")
-    .where({ slug: "boulder-world" })
-    .first();
+const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
+  const gym: Gym = await ctx.db("gyms").where({ slug }).first();
   if (!gym) {
     return;
   }
