@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+
 import { connect } from "../db";
 import { configure } from "./routes";
 
@@ -8,6 +10,8 @@ const main = async () => {
   };
 
   const app = express();
+
+  app.use(cors());
 
   configure(ctx, app);
 
