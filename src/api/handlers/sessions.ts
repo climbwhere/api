@@ -5,6 +5,7 @@ export const index: Handler = (ctx: Context) => async (req, res) => {
   const rawSessions = await ctx
     .db("sessions")
     .join("gyms", "gyms.id", "sessions.gym_id")
+    .where("sessions.starts_at", ">", ctx.db.raw("NOW()"))
     .orderBy("sessions.starts_at", "asc")
     .select(
       "sessions.id",
