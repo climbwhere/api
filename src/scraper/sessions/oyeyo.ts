@@ -46,10 +46,8 @@ async function getFirstDateOfClass(klass): Promise<string> {
 
 async function processStaff(klass, staff): Promise<OyeyoSession[]> {
   const firstDateOfClass = await getFirstDateOfClass(klass);
-  const date = moment(firstDateOfClass, "YYYYMMDD").toDate(),
-    year = date.getFullYear(),
-    month = date.getMonth();
-  const lastDayOfNextMonth = new Date(year, month + 1, 0);
+  const date = moment(firstDateOfClass, "YYYYMMDD");
+  const lastDayOfNextMonth = moment(date).add(1, "month").endOf("month");
 
   const res = await axios.get(
     "https://www.picktime.com/book/getClassAppSlots",
@@ -59,7 +57,7 @@ async function processStaff(klass, staff): Promise<OyeyoSession[]> {
         accountKey: "5176b721-0be8-447e-b43b-3652af54bd7b",
         serviceKeys: klass,
         staffKeys: staff,
-        endDateAndTime: moment(lastDayOfNextMonth).format("YYYYMMDD") + "2359",
+        endDateAndTime: lastDayOfNextMonth.format("YYYYMMDD") + "2359",
         v2: true,
       },
     },
