@@ -2,7 +2,7 @@ import axios from "axios";
 import moment from "moment-timezone";
 import FormData from "form-data";
 import cheerio from "cheerio";
-import { flatten } from "lodash";
+import { flatten, groupBy, map, mapValues } from "lodash";
 
 import type { Moment } from "moment-timezone";
 import type { Context } from "../context";
@@ -84,11 +84,22 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     }),
   );
 
-  return Promise.all(
+  const updatedSessions = await Promise.all(
     sessions.map(async (bffSession) =>
       insertOrUpdateSession(ctx.db, { ...bffSession, gym_id: gym.id }),
     ),
   );
+
+  const updatedSessionIds = updatedSessions.map((session) => session.id);
+
+  await ctx
+    .db("sessions")
+    .where({ gym_id: gym.id })
+    .where("starts_at", ">=", ctx.db.raw("NOW()"))
+    .whereNotIn("id", updatedSessionIds)
+    .update({ spaces: 0 });
+
+  return updatedSessions;
 };
 
 export default scrape;
