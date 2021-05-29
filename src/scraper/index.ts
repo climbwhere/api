@@ -4,10 +4,14 @@ import axios from "axios";
 import puppeteer from "puppeteer";
 
 import { connect } from "../db";
+import getLatestSnapshot from "../db/queries/getLatestSnapshot";
 import gyms from "./gyms";
 import sessions from "./sessions";
+import calculateChanges from "./shared/helpers/calculateChanges";
 
+import type { SnapshotData } from "../db/models/snapshot";
 import type { Context } from "./context";
+import moment from "moment";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -38,14 +42,19 @@ const main = async () => {
     }),
   );
 
-  const data = {};
+  const previousSnapshot = await getLatestSnapshot(ctx.db);
+  const previousData = previousSnapshot?.data;
+
+  const data: SnapshotData = {};
   results.forEach(({ resource, result }) => {
     if (result) {
       data[resource] = result;
     }
   });
-
   await ctx.db("snapshots").insert({ data });
+
+  const changes = calculateChanges(previousData, data);
+  console.log(JSON.stringify(changes, null, 4));
 
   process.exit(0);
 };
