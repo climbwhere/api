@@ -1,5 +1,5 @@
 export type Snapshot = {
   id: string;
-  data: string;
+  data: JSON;
   created_at: Date;
 };
