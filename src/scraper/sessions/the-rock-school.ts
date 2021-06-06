@@ -13,7 +13,7 @@ async function scrape(ctx: Context, slug: string): Promise<Session[]> {
 
   // get token
   const {
-    data: { token, branch }, // gym info can be obtained through branch
+    data: { token }, // gym info can be obtained through branch
   } = await axios("https://api.glofox.com/2.0/login", {
     method: "POST",
     data: {
@@ -23,39 +23,24 @@ async function scrape(ctx: Context, slug: string): Promise<Session[]> {
     },
   });
 
-  // get gym access program timing
+  // get timings
+  const start = Math.floor(Date.now() / 1000);
+  const end = start + 1900799; // around 3
   const {
-    data: { data: programs },
-  } = await axios("https://api.glofox.com/2.0/programs?private=false", {
-    params: { private: false },
+    data: { data: sessionData },
+  } = await axios(`https://api.glofox.com/2.0/events`, {
     headers: {
       authorization: `Bearer ${token}`,
     },
-  });
-
-  const gymEntryProgram = programs.filter(
-    (p) => p.name === "Gym Access and Entry",
-  );
-
-  // get timings
-  const {
-    data: { data: sessionData },
-  } = await axios(
-    "https://api.glofox.com/2.0/events?end=1622995199&include=trainers,facility,program,users_booked&page=2&private=false&sort_by=time_start&start=1621094400",
-    {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-      params: {
-        start: gymEntryProgram["date start"],
-        end: gymEntryProgram["date finish"],
-        include: ["trainers", "facility", "program", "users_booked"],
-        page: 2,
-        private: false,
-        sort_by: "time_start",
-      },
+    params: {
+      start,
+      end,
+      include: ["trainers", "facility", "program", "users_booked"],
+      page: 1,
+      private: false,
+      sort_by: "time_start",
     },
-  );
+  });
 
   const sessions: Session[] = sessionData.map((session) => ({
     starts_at: moment.unix(session.time_start).toDate(),
