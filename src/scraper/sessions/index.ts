@@ -9,6 +9,7 @@ import theRockSchool from "./the-rock-school";
 
 import type { Context } from "../context";
 import { Session } from "../../db/models";
+import boulderPlanet from "./boulder-planet";
 
 type Result = {
   [slug: string]:
@@ -27,6 +28,7 @@ const SCRAPERS = [
   { slug: "lighthouse", scrape: lighthouse },
   { slug: "z-vertigo", scrape: zVertigo },
   { slug: "boulder-world", scrape: boulderWorld },
+  { slug: "boulder-planet", scrape: boulderPlanet },
   { slug: "fitbloc", scrape: fitbloc },
   { slug: "the-rock-school", scrape: theRockSchool },
 ];
