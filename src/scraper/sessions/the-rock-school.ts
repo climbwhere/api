@@ -50,7 +50,7 @@ async function scrape(ctx: Context, slug: string): Promise<Session[]> {
         .unix(session.time_start)
         .add(session.duration, "minutes")
         .toDate(),
-      spaces: session.size - session.booked,
+      spaces: Math.max(session.size - session.booked, 0),
     }));
 
   return Promise.all(
