@@ -42,14 +42,16 @@ async function scrape(ctx: Context, slug: string): Promise<Session[]> {
     },
   });
 
-  const sessions: Session[] = sessionData.map((session) => ({
-    starts_at: moment.unix(session.time_start).toDate(),
-    ends_at: moment
-      .unix(session.time_start)
-      .add(session.duration, "minutes")
-      .toDate(),
-    spaces: session.size - session.booked,
-  }));
+  const sessions: Session[] = sessionData
+    .filter((session) => session.program_id === "60044d42f2749354450960a2")
+    .map((session) => ({
+      starts_at: moment.unix(session.time_start).toDate(),
+      ends_at: moment
+        .unix(session.time_start)
+        .add(session.duration, "minutes")
+        .toDate(),
+      spaces: session.size - session.booked,
+    }));
 
   return Promise.all(
     sessions.map(async (session) =>
