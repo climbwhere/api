@@ -9,6 +9,7 @@ import theRockSchool from "./the-rock-school";
 import boulderPlanet from "./boulder-planet";
 import boulderMovementTaiSeng from "./boulder-movement-tai-seng";
 import boulderMovementDowntown from "./boulder-movement-downtown";
+import boulderMovementRochor from "./boulder-movement-rochor";
 
 import type { Context } from "../context";
 import { Session } from "../../db/models";
@@ -35,6 +36,7 @@ const SCRAPERS = [
   { slug: "the-rock-school", scrape: theRockSchool },
   { slug: "boulder-movement-tai-seng", scrape: boulderMovementTaiSeng },
   { slug: "boulder-movement-downtown", scrape: boulderMovementDowntown },
+  { slug: "boulder-movement-rochor", scrape: boulderMovementRochor },
 ];
 
 const scrape = async (ctx: Context): Promise<Result> => {
