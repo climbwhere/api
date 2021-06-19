@@ -6,10 +6,12 @@ import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
 import fitbloc from "./fitbloc";
 import theRockSchool from "./the-rock-school";
+import boulderPlanet from "./boulder-planet";
+import boulderMovementTaiSeng from "./boulder-movement-tai-seng";
+import boulderMovementDowntown from "./boulder-movement-downtown";
 
 import type { Context } from "../context";
 import { Session } from "../../db/models";
-import boulderPlanet from "./boulder-planet";
 
 type Result = {
   [slug: string]:
@@ -31,6 +33,8 @@ const SCRAPERS = [
   { slug: "boulder-planet", scrape: boulderPlanet },
   { slug: "fitbloc", scrape: fitbloc },
   { slug: "the-rock-school", scrape: theRockSchool },
+  { slug: "boulder-movement-tai-seng", scrape: boulderMovementTaiSeng },
+  { slug: "boulder-movement-downtown", scrape: boulderMovementDowntown },
 ];
 
 const scrape = async (ctx: Context): Promise<Result> => {
