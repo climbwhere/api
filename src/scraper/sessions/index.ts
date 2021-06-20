@@ -46,6 +46,7 @@ const scrape = async (ctx: Context): Promise<Result> => {
         const sessions = await scrape(ctx, slug);
         return { slug, data: sessions };
       } catch (error) {
+        console.error(error);
         return { slug, error: { message: error.message } };
       }
     }),
