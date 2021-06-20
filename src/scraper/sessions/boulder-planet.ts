@@ -1,31 +1,14 @@
-import moment from "moment-timezone";
+import moment from "moment";
 
-import type { Context } from "../context";
-import type { Session, Gym } from "../../db/models";
+import { Gym } from "../../db/models";
+import type { Session } from "../../db/models/session";
 import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
+import type { Context } from "../context";
 
 type BoulderPlanetSession = {
-  attributes: {
-    startTime: string;
-    endTime: string;
-    openings: number;
-  };
-};
-
-const scrapeSession = async (
-  ctx: Context,
-  gym: Gym,
-  boulderPlanetSession: BoulderPlanetSession,
-): Promise<Session> => {
-  const starts_at = moment(boulderPlanetSession.attributes.startTime).toDate();
-  const ends_at = moment(boulderPlanetSession.attributes.endTime).toDate();
-
-  return insertOrUpdateSession(ctx.db, {
-    starts_at,
-    ends_at,
-    gym_id: gym.id,
-    spaces: boulderPlanetSession.attributes.openings,
-  });
+  starts_at: Date;
+  ends_at: Date;
+  spaces: number;
 };
 
 const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
@@ -34,28 +17,65 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     return;
   }
 
-  const res = await ctx.http.post(
-    "https://prod-mkt-gateway.mindbody.io/v1/search/class_times",
-    {
-      sort: "start_time",
-      page: { size: 100, number: 1 },
-      filter: {
-        radius: 0,
-        startTimeRanges: [
-          {
-            from: moment().startOf("day").toISOString(),
-            to: moment().startOf("day").add(1, "week").toISOString(),
-          },
-        ],
-        locationSlugs: ["boulder-planet"],
-        include_dynamic_pricing: "true",
-        inventory_source: ["MB"],
-      },
-    },
+  const page = await ctx.browser.newPage();
+
+  await page.goto(
+    "https://www-boulderplanet-sg.filesusr.com/html/8b92f2_1385c18a2b0465697053236af060bc3b.html",
+  );
+  await page.waitFor(10000);
+
+  const sessions = await page.evaluate(() => {
+    const sessions = [];
+
+    const sessionElems = document.querySelectorAll(".bw-session");
+    for (const sessionElem of sessionElems) {
+      const nameElem = sessionElem.querySelector(".bw-session__name");
+      const startTimeElem = sessionElem.querySelector(".hc_starttime");
+      const endTimeElem = sessionElem.querySelector(".hc_endtime");
+      const waitlistElem = sessionElem.querySelector(".hc_waitlist");
+      const slotsElem = sessionElem.querySelector(".hc_availability");
+
+      if (!nameElem) {
+        continue;
+      }
+
+      if (!nameElem.textContent.toUpperCase().includes("TIMESLOT")) {
+        continue;
+      }
+
+      let spaces = 0;
+      if (!waitlistElem) {
+        if (!slotsElem) {
+          continue;
+        }
+        spaces = parseInt(slotsElem.textContent.trim().slice(0, 2), 10);
+      }
+
+      sessions.push({
+        starts_at: startTimeElem.getAttribute("datetime"),
+        ends_at: endTimeElem.getAttribute("datetime"),
+        spaces,
+      });
+    }
+
+    return sessions;
+  });
+
+  const boulderPlanetSessions = sessions.map<BoulderPlanetSession>(
+    (session) => ({
+      starts_at: moment(session.starts_at).toDate(),
+      ends_at: moment(session.ends_at).toDate(),
+      spaces: session.spaces,
+    }),
   );
 
-  return Promise.all<Session>(
-    res.data.data.map((session) => scrapeSession(ctx, gym, session)),
+  return Promise.all(
+    boulderPlanetSessions.map(async (boulderPlanetSession) =>
+      insertOrUpdateSession(ctx.db, {
+        ...boulderPlanetSession,
+        gym_id: gym.id,
+      }),
+    ),
   );
 };
 
