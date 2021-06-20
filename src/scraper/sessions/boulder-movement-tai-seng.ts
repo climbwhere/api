@@ -20,7 +20,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
 
   const sessions = [];
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const startDate = moment()
       .startOf("day")
       .add(i, "days")
