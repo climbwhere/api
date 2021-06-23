@@ -6,6 +6,10 @@ import type { Session, Gym } from "../../db/models";
 import type { Context } from "../context";
 import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 
+const LOCATION_ID = "ca204f51-922f-42e3-bdb6-1f8373eb5268",
+  ACCOUNT_KEY = "566fe29b-2e46-4a73-ad85-c16bfc64b34b",
+  WEEKEND_SK = "2be7247c-4c08-42c5-beb4-1678c449d108"; // weekend slots
+
 type BoulderWorldSession = {
   starts_at: Date;
   ends_at: Date;
@@ -45,8 +49,8 @@ async function getFirstDateOfClass(klass): Promise<string> {
     "https://www.picktime.com/book/get1stDateForCurrentClass",
     {
       params: {
-        locationId: "ca204f51-922f-42e3-bdb6-1f8373eb5268",
-        accountKey: "566fe29b-2e46-4a73-ad85-c16bfc64b34b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
         serviceKeys: klass,
       },
     },
@@ -57,14 +61,19 @@ async function getFirstDateOfClass(klass): Promise<string> {
 
 async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
   const firstDateOfClass = await getFirstDateOfClass(klass);
-  const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
+  let lastDate;
+  if (isWeekend) {
+    lastDate = moment(firstDateOfClass, "YYYYMMDD").add(2, "days");
+  } else {
+    lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
+  }
 
   const res = await axios.get(
     "https://www.picktime.com/book/getClassAppSlots",
     {
       params: {
-        locationId: "ca204f51-922f-42e3-bdb6-1f8373eb5268",
-        accountKey: "566fe29b-2e46-4a73-ad85-c16bfc64b34b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
         serviceKeys: klass,
         staffKeys: "",
         endDateAndTime: lastDate.format("YYYYMMDD") + "2359",
@@ -97,14 +106,14 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     "https://www.picktime.com/book/getClassesForCurrentLocation",
     {
       params: {
-        locationId: "ca204f51-922f-42e3-bdb6-1f8373eb5268",
-        accountKey: "566fe29b-2e46-4a73-ad85-c16bfc64b34b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
       },
     },
   );
 
   const classes = await Promise.all<BoulderWorldSession[][]>(
-    res.data.data.map(processClass),
+    res.data.data.map((klass) => processClass(klass, klass === WEEKEND_SK)),
   );
 
   const sessions = flattenDeep<BoulderWorldSession>(classes);
