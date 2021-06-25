@@ -10,8 +10,7 @@
     "start": "node dist/api/index.js",
     "scrape:dev": "ts-node src/scraper/index.ts",
     "scrape": "node dist/scraper/index.js",
-    "lint": "eslint '*/**/*.{js,ts}'",
-    "test": "ts-node src/scraper/sessions/boulder-world.ts"
+    "lint": "eslint '*/**/*.{js,ts}'"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
