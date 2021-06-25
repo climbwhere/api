@@ -10,7 +10,8 @@
     "start": "node dist/api/index.js",
     "scrape:dev": "ts-node src/scraper/index.ts",
     "scrape": "node dist/scraper/index.js",
-    "lint": "eslint '*/**/*.{js,ts}'"
+    "lint": "eslint '*/**/*.{js,ts}'",
+    "test": "ts-node src/scraper/sessions/boulder-world.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
@@ -34,11 +35,13 @@
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.10",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "form-data": "^4.0.0",
     "is-uuid": "^1.0.2",
     "knex": "^0.95.4",
     "moment-timezone": "^0.5.33",
+    "node-telegram-bot-api": "^0.53.0",
     "pg": "^8.6.0",
     "puppeteer": "^8.0.0"
   }
