@@ -32,7 +32,7 @@ const main = async () => {
 
   app.use(
     cors({
-      origin: ENV === "development" ? "*" : ["https://climbwhere.sg"],
+      origin: ENV === "development" ? "*" : ["https://www.climbwhere.sg"],
     }),
   );
 
