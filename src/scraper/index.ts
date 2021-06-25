@@ -1,5 +1,6 @@
 import "./config";
 
+import { isNil, isEmpty } from "lodash";
 import axios from "axios";
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
@@ -62,6 +63,21 @@ const main = async () => {
       data[resource] = result;
     }
   });
+
+  // Report errors
+  const errors = Object.keys(data.sessions).filter(
+    (gym) => !isNil(data.sessions[gym].error),
+  );
+
+  if (!isEmpty(errors)) {
+    bot.sendToAdminChannel(
+      "Scraper errors detected:",
+      errors
+        .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
+        .join("/n"),
+    );
+  }
+
   await ctx.db("snapshots").insert({ data });
 
   const changes = calculateChanges(previousData, data);
