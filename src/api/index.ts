@@ -14,6 +14,7 @@ const main = async () => {
     TELEGRAM_BOT_TOKEN,
     ADMIN_CHANNEL,
     PORT,
+    ENV,
   } = process.env;
 
   const bot = createBot({
@@ -29,7 +30,11 @@ const main = async () => {
 
   const app = express();
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: ENV === "development" ? "*" : ["https://climbwhere.sg"],
+    }),
+  );
 
   configure(ctx, app);
 
