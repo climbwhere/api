@@ -70,7 +70,7 @@ const main = async () => {
   );
 
   if (!isEmpty(errors)) {
-    bot.sendToAdminChannel(
+    await bot.sendToAdminChannel(
       "Scraper errors detected:",
       errors
         .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
