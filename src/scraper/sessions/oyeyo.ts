@@ -6,6 +6,9 @@ import type { Session, Gym } from "../../db/models";
 import type { Context } from "../context";
 import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 
+const LOCATION_ID = "07e26051-689f-471c-8201-bf03796a6a04";
+const ACCOUNT_KEY = "5176b721-0be8-447e-b43b-3652af54bd7b";
+
 type OyeyoSession = {
   starts_at: Date;
   ends_at: Date;
@@ -34,8 +37,8 @@ async function getFirstDateOfClass(klass): Promise<string> {
     "https://www.picktime.com/book/get1stDateForCurrentClass",
     {
       params: {
-        locationId: "07e26051-689f-471c-8201-bf03796a6a04",
-        accountKey: "5176b721-0be8-447e-b43b-3652af54bd7b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
         serviceKeys: klass,
       },
     },
@@ -46,14 +49,16 @@ async function getFirstDateOfClass(klass): Promise<string> {
 
 async function processStaff(klass, staff): Promise<OyeyoSession[]> {
   const firstDateOfClass = await getFirstDateOfClass(klass);
-  const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
+  // 260621: OYEYO changed their booking window, but this could also just be temporary
+  // const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
+  const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(4, "days");
 
   const res = await axios.get(
     "https://www.picktime.com/book/getClassAppSlots",
     {
       params: {
-        locationId: "07e26051-689f-471c-8201-bf03796a6a04",
-        accountKey: "5176b721-0be8-447e-b43b-3652af54bd7b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
         serviceKeys: klass,
         staffKeys: staff,
         endDateAndTime: lastDate.format("YYYYMMDD") + "2359",
@@ -74,8 +79,8 @@ async function processClass(klass): Promise<OyeyoSession[][]> {
     "https://www.picktime.com/book/getStaffForCurrentClass",
     {
       params: {
-        locationId: "07e26051-689f-471c-8201-bf03796a6a04",
-        accountKey: "5176b721-0be8-447e-b43b-3652af54bd7b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
         serviceKeys: klass,
       },
     },
@@ -98,8 +103,8 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     "https://www.picktime.com/book/getClassesForCurrentLocation",
     {
       params: {
-        locationId: "07e26051-689f-471c-8201-bf03796a6a04",
-        accountKey: "5176b721-0be8-447e-b43b-3652af54bd7b",
+        locationId: LOCATION_ID,
+        accountKey: ACCOUNT_KEY,
       },
     },
   );
