@@ -1,12 +1,14 @@
 import type { Context } from "../context";
 import type { Handler } from "./types";
 
-export const post: Handler = (ctx: Context) => async (req, res) => {
+export const report: Handler = ({ adminBot }: Context) => async (req, res) => {
   const { message } = req.body;
-  const { bot } = ctx;
 
   try {
-    await bot.sendToAdminChannel("Submission from feedback form:", message);
+    await adminBot.sendToAdminChannel(
+      "Submission from feedback form:",
+      message,
+    );
   } catch (error) {
     console.error(error);
     res.status(500);
@@ -17,5 +19,5 @@ export const post: Handler = (ctx: Context) => async (req, res) => {
 };
 
 export default {
-  post,
+  report,
 };
