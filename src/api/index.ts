@@ -25,7 +25,9 @@ const main = async () => {
   app.use(
     cors({
       origin:
-        process.env.ENV === "development" ? "*" : ["https://www.climbwhere.sg"],
+        process.env.NODE_ENV === "development"
+          ? "*"
+          : ["https://www.climbwhere.sg"],
     }),
   );
 
