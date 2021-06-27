@@ -1,25 +1,18 @@
 import TelegramBot from "node-telegram-bot-api";
 
-export const escapeString = (string: string): string =>
-  string.replace(/(\[[^\][]*]\(http[^()]*\))|[_*[\]()~>#+=|{}.!-]/gi, (x, y) =>
-    y ? y : "\\" + x,
-  );
-
 export type AdminBot = {
   sendToAdminChannel: (title: string, message: string) => Promise<Error>;
 };
 
-type BotProps = {
-  token: string;
-  botURL: string;
-  adminChannel: string;
-};
-export default function createBot({
+export function create({
   token,
   botURL,
   adminChannel,
-}: BotProps): AdminBot {
-  //setup
+}: {
+  token: string;
+  botURL: string;
+  adminChannel: string;
+}): AdminBot {
   const bot = new TelegramBot(token);
   bot.setWebHook(`${botURL}/bot${token}`);
 
@@ -41,3 +34,13 @@ export default function createBot({
     },
   };
 }
+
+export const escapeString = (string: string): string =>
+  string.replace(/(\[[^\][]*]\(http[^()]*\))|[_*[\]()~>#+=|{}.!-]/gi, (x, y) =>
+    y ? y : "\\" + x,
+  );
+
+export default {
+  create,
+  escapeString,
+};

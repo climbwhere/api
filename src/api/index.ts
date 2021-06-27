@@ -1,44 +1,39 @@
+import "dotenv/config";
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
-
+import bot from "../bot";
 import { connect } from "../db";
 import { configure } from "./routes";
-import createBot from "../createBot";
+import { Context } from "./context";
 
 const main = async () => {
-  const {
-    BOT_SERVER_URL,
-    TELEGRAM_BOT_TOKEN,
-    ADMIN_CHANNEL,
-    PORT,
-    ENV,
-  } = process.env;
-
-  const bot = createBot({
-    token: TELEGRAM_BOT_TOKEN,
-    botURL: BOT_SERVER_URL,
-    adminChannel: ADMIN_CHANNEL,
+  const adminBot = bot.create({
+    token: process.env.TELEGRAM_BOT_TOKEN,
+    botURL: process.env.BOT_SERVER_URL,
+    adminChannel: process.env.ADMIN_CHANNEL,
   });
 
-  const ctx = {
+  const ctx: Context = {
     db: connect(),
-    bot,
+    adminBot,
   };
 
   const app = express();
 
   app.use(
     cors({
-      origin: ENV === "development" ? "*" : ["https://www.climbwhere.sg"],
+      origin:
+        process.env.NODE_ENV === "development"
+          ? "*"
+          : ["https://www.climbwhere.sg"],
     }),
   );
 
   configure(ctx, app);
 
-  const port = PORT || 3030;
+  const port = process.env.PORT || 3030;
   app.listen(port, () => {
     console.log(`listening on port ${port}...`);
   });
