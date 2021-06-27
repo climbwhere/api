@@ -1,7 +1,7 @@
 import type { Knex } from "knex";
-import type { AdminBot } from "../createBot";
+import type { AdminBot } from "../bot";
 
 export type Context = {
   db: Knex;
-  bot: AdminBot;
+  adminBot: AdminBot;
 };

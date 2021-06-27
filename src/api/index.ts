@@ -4,9 +4,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import bot from "../bot";
 import { connect } from "../db";
 import { configure } from "./routes";
-import createBot from "../createBot";
+import { Context } from "./context";
 
 const main = async () => {
   const {
@@ -17,15 +18,15 @@ const main = async () => {
     ENV,
   } = process.env;
 
-  const bot = createBot({
+  const adminBot = bot.create({
     token: TELEGRAM_BOT_TOKEN,
     botURL: BOT_SERVER_URL,
     adminChannel: ADMIN_CHANNEL,
   });
 
-  const ctx = {
+  const ctx: Context = {
     db: connect(),
-    bot,
+    adminBot,
   };
 
   const app = express();

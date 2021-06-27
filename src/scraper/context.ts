@@ -2,11 +2,11 @@ import type { AxiosInstance } from "axios";
 import type { Knex } from "knex";
 import type { Browser } from "puppeteer";
 
-import { AdminBot } from "../createBot";
+import { AdminBot } from "../bot";
 
 export type Context = {
   db: Knex;
   browser: Browser;
   http: AxiosInstance;
-  bot: AdminBot;
+  adminBot: AdminBot;
 };
