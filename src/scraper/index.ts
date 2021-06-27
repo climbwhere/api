@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "./config";
 
 import { isNil, isEmpty } from "lodash";
