@@ -49,9 +49,9 @@ async function getFirstDateOfClass(klass): Promise<string> {
 
 async function processStaff(klass, staff): Promise<OyeyoSession[]> {
   const firstDateOfClass = await getFirstDateOfClass(klass);
-  // 260621: OYEYO changed their booking window, but this could also just be temporary
+  // 270621: Booking window doesn't seem to exist? It's just the last date of the month then
   // const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
-  const lastDate = moment(firstDateOfClass, "YYYYMMDD").add(4, "days");
+  const lastDate = moment(firstDateOfClass, "YYYYMMDD").endOf("month");
 
   const res = await axios.get(
     "https://www.picktime.com/book/getClassAppSlots",
