@@ -1,4 +1,4 @@
-import { flatten, keyBy, keys, map, orderBy } from "lodash";
+import { chain, flatten, keyBy, keys, map, orderBy } from "lodash";
 import getLatestSnapshot from "../../db/queries/getLatestSnapshot";
 
 import type { Gym } from "../../db/models";
@@ -29,30 +29,28 @@ export const index: Handler = (ctx: Context) => async (req, res) => {
 
   const gyms = keyBy(
     await Promise.all<Gym>(
-      keys(snapshot.data.sessions).map(
-        (slug): Promise<Gym> => ctx.db("gyms").where({ slug }).first(),
+      keys(snapshot.data.sessions).map((slug) =>
+        ctx.db<Gym>("gyms").where({ slug }).first(),
       ),
     ),
     "slug",
   );
 
-  const sessions = orderBy(
-    flatten(
-      map(snapshot.data.sessions, (result, gymSlug): Session[] => {
-        if (result.error) {
-          return [];
-        }
-        const gym = gyms[gymSlug];
-        return map(result.data, (session) => ({
-          ...session,
-          gym_id: undefined,
-          gym,
-        }));
-      }),
-    ),
-    "starts_at",
-    "asc",
-  );
+  const sessions = chain(snapshot.data.sessions)
+    .map((result, gymSlug): Session[] => {
+      if (result.error) {
+        return [];
+      }
+      const gym = gyms[gymSlug];
+      return map(result.data, (session) => ({
+        ...session,
+        gym_id: undefined,
+        gym,
+      }));
+    })
+    .flatten()
+    .orderBy("starts_at", "asc")
+    .value();
 
   const body: ResponseBody = {
     data: sessions,
