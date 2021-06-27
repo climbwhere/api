@@ -22,12 +22,10 @@ const SCRAPERS = [
 ];
 
 const main = async () => {
-  const { BOT_SERVER_URL, TELEGRAM_BOT_TOKEN, ADMIN_CHANNEL } = process.env;
-
   const adminBot = bot.create({
-    token: TELEGRAM_BOT_TOKEN,
-    botURL: BOT_SERVER_URL,
-    adminChannel: ADMIN_CHANNEL,
+    token: process.env.TELEGRAM_BOT_TOKEN,
+    botURL: process.env.BOT_SERVER_URL,
+    adminChannel: process.env.ADMIN_CHANNEL,
   });
 
   const db = connect();

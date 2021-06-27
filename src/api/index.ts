@@ -10,18 +10,10 @@ import { configure } from "./routes";
 import { Context } from "./context";
 
 const main = async () => {
-  const {
-    BOT_SERVER_URL,
-    TELEGRAM_BOT_TOKEN,
-    ADMIN_CHANNEL,
-    PORT,
-    ENV,
-  } = process.env;
-
   const adminBot = bot.create({
-    token: TELEGRAM_BOT_TOKEN,
-    botURL: BOT_SERVER_URL,
-    adminChannel: ADMIN_CHANNEL,
+    token: process.env.TELEGRAM_BOT_TOKEN,
+    botURL: process.env.BOT_SERVER_URL,
+    adminChannel: process.env.ADMIN_CHANNEL,
   });
 
   const ctx: Context = {
@@ -33,13 +25,14 @@ const main = async () => {
 
   app.use(
     cors({
-      origin: ENV === "development" ? "*" : ["https://www.climbwhere.sg"],
+      origin:
+        process.env.ENV === "development" ? "*" : ["https://www.climbwhere.sg"],
     }),
   );
 
   configure(ctx, app);
 
-  const port = PORT || 3030;
+  const port = process.env.PORT || 3030;
   app.listen(port, () => {
     console.log(`listening on port ${port}...`);
   });
