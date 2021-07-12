@@ -80,6 +80,8 @@ const main = async () => {
   const changes = calculateChanges(previousData, data);
   console.log(JSON.stringify(changes, null, 4));
 
+  await db.destroy(); // Close DB connection
+
   process.exit(0);
 };
 
