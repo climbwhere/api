@@ -23,6 +23,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     waitUntil: "domcontentloaded",
     timeout: 10000,
   });
+  await page.waitFor(10000);
 
   const sessions = await page.evaluate(() => {
     const sessions = [];
