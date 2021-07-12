@@ -21,8 +21,11 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
 
   await page.goto(
     "https://www-boulderplanet-sg.filesusr.com/html/8b92f2_1385c18a2b0465697053236af060bc3b.html",
+    {
+      waitUntil: "domcontentloaded",
+      timeout: 10000,
+    },
   );
-  await page.waitFor(10000);
 
   const sessions = await page.evaluate(() => {
     const sessions = [];

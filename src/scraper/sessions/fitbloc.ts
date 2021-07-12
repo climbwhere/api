@@ -19,8 +19,10 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
 
   const page = await ctx.browser.newPage();
 
-  await page.goto("https://fitbloc.com/booking/");
-  await page.waitFor(5000);
+  await page.goto("https://fitbloc.com/booking/", {
+    waitUntil: "domcontentloaded",
+    timeout: 10000,
+  });
 
   const sessions = await page.evaluate(() => {
     const sessions = [];
