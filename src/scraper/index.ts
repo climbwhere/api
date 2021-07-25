@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "./config";
 
-import { isNil, isEmpty } from "lodash";
+import { isNil, isEmpty, flatMap } from "lodash";
 import axios from "axios";
 import puppeteer from "puppeteer";
 
@@ -61,12 +61,17 @@ const main = async () => {
     }
   });
 
+  const changes = calculateChanges(previousData, data);
+  console.log(JSON.stringify(changes, null, 4));
+
+  const numberOfChanges = flatMap(Object.values(changes), (d) => d.data).length;
+
   // Report errors
   const errors = Object.keys(data.sessions).filter(
     (gym) => !isNil(data.sessions[gym].error),
   );
 
-  if (!isEmpty(errors)) {
+  if (!isEmpty(errors) && numberOfChanges > 0) {
     await adminBot.sendToAdminChannel(
       "Scraper errors detected:",
       errors
@@ -76,9 +81,6 @@ const main = async () => {
   }
 
   await ctx.db("snapshots").insert({ data });
-
-  const changes = calculateChanges(previousData, data);
-  console.log(JSON.stringify(changes, null, 4));
 
   await db.destroy(); // Close DB connection
 
