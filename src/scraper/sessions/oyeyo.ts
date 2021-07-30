@@ -67,6 +67,9 @@ async function processStaff(klass, staff): Promise<OyeyoSession[]> {
     },
   );
 
+  if (res.data.data == null) {
+    return [];
+  }
   const slots = await Promise.all<OyeyoSession>(
     res.data.data.map(async (slot) => processSlot(slot, res.data.subMetadata)),
   );
@@ -86,6 +89,9 @@ async function processClass(klass): Promise<OyeyoSession[][]> {
     },
   );
 
+  if (res.data.data == null) {
+    return [];
+  }
   const staffs = await Promise.all<OyeyoSession[]>(
     res.data.data.map((staff) => processStaff(klass, staff)),
   );
@@ -109,6 +115,9 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     },
   );
 
+  if (res.data.data == null) {
+    return [];
+  }
   const classes = await Promise.all<OyeyoSession[][]>(
     res.data.data.map(processClass),
   );

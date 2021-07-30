@@ -73,6 +73,9 @@ async function processClass(klass) {
     return [];
   }
 
+  if (res.data.data == null) {
+    return [];
+  }
   const slots = await Promise.all(
     res.data.data.map((slot) => processSlot(slot, res.data.subMetadata)),
   );

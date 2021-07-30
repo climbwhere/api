@@ -87,6 +87,9 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
     return [];
   }
 
+  if (res.data.data == null) {
+    return [];
+  }
   const slots = await Promise.all<BoulderWorldSession>(
     res.data.data.map((slot) =>
       processSlot(slot, res.data.subMetadata, isWeekend),
@@ -112,6 +115,9 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     },
   );
 
+  if (res.data.data == null) {
+    return [];
+  }
   const classes = await Promise.all<BoulderWorldSession[][]>(
     res.data.data.map((klass) => processClass(klass, klass === WEEKEND_SK)),
   );
