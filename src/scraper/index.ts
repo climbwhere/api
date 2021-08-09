@@ -54,7 +54,7 @@ const main = async () => {
   await browser.close();
 
   const previousSnapshot = await getLatestSnapshot(ctx.db);
-  const previousData = previousSnapshot?.data;
+  const previousData = previousSnapshot?.data ?? {};
 
   const data: SnapshotData = {};
   results.forEach(({ resource, result }) => {
