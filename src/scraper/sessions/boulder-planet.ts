@@ -1,4 +1,5 @@
 import moment from "moment";
+import cheerio from "cheerio";
 
 import { Gym } from "../../db/models";
 import type { Session } from "../../db/models/session";
@@ -17,52 +18,59 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     return;
   }
 
-  const page = await ctx.browser.newPage();
+  const sessions = [];
 
-  await page.goto(
-    "https://www-boulderplanet-sg.filesusr.com/html/8b92f2_1385c18a2b0465697053236af060bc3b.html",
+  const startDate = moment().startOf("day").format("YYYY-MM-DD");
+
+  const res = await ctx.http.get(
+    "https://widgets.mindbodyonline.com/widgets/schedules/158115/load_markup",
     {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
+      params: {
+        "options[start_date]": startDate,
+      },
     },
   );
-  await page.waitFor(10000);
 
-  const sessions = await page.evaluate(() => {
-    const sessions = [];
+  const $ = cheerio.load(res.data.class_sessions);
 
-    const sessionElems = document.querySelectorAll(".bw-session");
-    for (const sessionElem of sessionElems) {
-      const nameElem = sessionElem.querySelector(".bw-session__name");
-      const startTimeElem = sessionElem.querySelector(".hc_starttime");
-      const endTimeElem = sessionElem.querySelector(".hc_endtime");
-      const waitlistElem = sessionElem.querySelector(".hc_waitlist");
-      const slotsElem = sessionElem.querySelector(".hc_availability");
+  if ($(".bw-widget__empty.is-visible").length !== 0) {
+    return [];
+  }
 
-      if (!nameElem) {
-        continue;
-      }
+  const startIndex =
+    res.data.class_sessions.indexOf("scheduleData = ") +
+    "scheduleData = ".length;
+  const endIndex = res.data.class_sessions.indexOf("$.event.trigger");
+  const scheduleData = JSON.parse(
+    res.data.class_sessions.substring(startIndex, endIndex),
+  );
 
-      if (!nameElem.textContent.toUpperCase().includes("TIMESLOT")) {
-        continue;
-      }
+  $(".bw-session").each((index, sessionElem) => {
+    const name = $(".bw-session__name", sessionElem).text();
 
-      let spaces = 0;
-      if (!waitlistElem) {
-        if (!slotsElem) {
-          continue;
-        }
-        spaces = parseInt(slotsElem.textContent.trim().slice(0, 2), 10);
-      }
-
-      sessions.push({
-        starts_at: startTimeElem.getAttribute("datetime"),
-        ends_at: endTimeElem.getAttribute("datetime"),
-        spaces,
-      });
+    if (!name.includes("Daily Entry - Gym Entry")) {
+      return;
     }
 
-    return sessions;
+    const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
+    const $$ = cheerio.load(scheduleData.contents[sessionId].classAvailability);
+
+    const slotsElem = $$(".hc_availability");
+    const waitlistElem = $$(".hc_waitlist");
+
+    let spaces = 0;
+    if (waitlistElem.length === 0) {
+      if (slotsElem.length === 0) {
+        return;
+      }
+      spaces = parseInt(slotsElem.text().trim().slice(0, 2), 10);
+    }
+
+    sessions.push({
+      starts_at: $(".hc_starttime", sessionElem).attr("datetime"),
+      ends_at: $(".hc_endtime", sessionElem).attr("datetime"),
+      spaces,
+    });
   });
 
   const boulderPlanetSessions = sessions.map<BoulderPlanetSession>(

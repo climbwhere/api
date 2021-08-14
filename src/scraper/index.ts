@@ -31,15 +31,15 @@ const main = async () => {
 
   const db = connect();
 
-  const browser = await puppeteer.launch({
-    headless: isProduction,
-    defaultViewport: null,
-    args: isProduction ? ["--no-sandbox"] : [],
-  });
+  //  const browser = await puppeteer.launch({
+  //    headless: isProduction,
+  //    defaultViewport: null,
+  //    args: isProduction ? ["--no-sandbox"] : [],
+  //  });
 
   const ctx: Context = {
     db,
-    browser,
+    // browser,
     http: axios,
     adminBot,
   };
@@ -51,7 +51,7 @@ const main = async () => {
     }),
   );
 
-  await browser.close();
+  // await browser.close();
 
   const previousSnapshot = await getLatestSnapshot(ctx.db);
   const previousData = previousSnapshot?.data ?? {};
