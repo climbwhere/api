@@ -72,7 +72,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
   // First, create all the requests we'll need to get our data
   const requests = [];
   // BFF slots only become available one week before.
-  for (let i = 1; i < 8; i++) {
+  for (let i = 0; i < 7; i++) {
     requests.push(createRequest(moment(new Date()).add(i, "days")));
   }
   // Make requests
