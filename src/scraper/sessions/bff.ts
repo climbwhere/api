@@ -17,7 +17,7 @@ type BFFSession = {
 
 function parseXML(xml, i): BFFSession[] {
   // Let's use a date variable, because each instantiation of this function is for one day
-  const date = moment(new Date()).add(i + 1, "days");
+  const date = moment(new Date()).add(i, "days");
   const slots = [];
   // XML scraping
   const $ = cheerio.load(xml);
