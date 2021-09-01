@@ -4,6 +4,7 @@ export type Snapshot = {
   id: string;
   data: SnapshotData;
   created_at: Date;
+  has_errors: boolean;
 };
 
 export type SnapshotData = {

@@ -69,6 +69,7 @@ const main = async () => {
   const numberOfChanges = flatMap(Object.values(changes), (d) => d.data).length;
 
   // Report errors
+  let hasErrors = false;
   const errors = Object.keys(data.sessions).filter(
     (gym) => !isNil(data.sessions[gym].error),
   );
@@ -80,9 +81,10 @@ const main = async () => {
         .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
         .join("\n"),
     );
+    hasErrors = true;
   }
 
-  await ctx.db("snapshots").insert({ data });
+  await ctx.db("snapshots").insert({ has_errors: hasErrors, data });
 
   await db.destroy(); // Close DB connection
 
