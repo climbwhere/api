@@ -38,7 +38,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     const $ = cheerio.load(res.data.class_sessions);
 
     if ($(".bw-widget__empty.is-visible").length !== 0) {
-      return [];
+      continue;
     }
 
     const startIndex =
@@ -79,6 +79,8 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
       });
     });
   }
+
+  console.log(sessions);
 
   const fitblocSessions = sessions.map<FitblocSession>((session) => ({
     starts_at: moment(session.starts_at).toDate(),
