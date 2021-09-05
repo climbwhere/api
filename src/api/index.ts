@@ -29,7 +29,7 @@ const main = async () => {
           ? "*"
           : [
               "https://www.climbwhere.sg",
-              "https://app.netlify.com/sites/elastic-franklin-9a8023/deploys",
+              "https://deploy-preview-11--elastic-franklin-9a8023.netlify.app",
             ],
     }),
   );
