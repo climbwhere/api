@@ -8,6 +8,6 @@ export type Gym = {
   website_url?: string;
   image_url?: string;
   booking_url?: string;
-  map_urlL?: string;
+  map_url?: string;
   instagram_url?: string;
 };
