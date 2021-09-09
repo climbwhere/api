@@ -1,6 +1,7 @@
 exports.seed = function (knex) {
   return knex("gyms").insert([
     { name: "BFF Climb", slug: "bff" },
+    { name: "b8a", slug: "b8a" },
     { name: "BM Downtown", slug: "boulder-movement-downtown" },
     { name: "BM Rochor", slug: "boulder-movement-rochor" },
     { name: "BM Tai Seng", slug: "boulder-movement-tai-seng" },

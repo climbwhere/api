@@ -3,7 +3,6 @@ import "./config";
 
 import { isNil, isEmpty, flatMap } from "lodash";
 import axios from "axios";
-import puppeteer from "puppeteer";
 
 import bot from "../bot";
 import { connect } from "../db";

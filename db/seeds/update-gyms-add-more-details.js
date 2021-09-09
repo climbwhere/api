@@ -1,6 +1,19 @@
 exports.seed = function (knex) {
   return Promise.all([
     update(knex, {
+      slug: "b8a",
+      website_url: "https://b8a.sg",
+      image_url:
+        "https://instagram.fsin4-1.fna.fbcdn.net/v/t51.2885-15/e35/s1080x1080/241285702_841018216583102_4504257138895436828_n.jpg?_nc_ht=instagram.fsin4-1.fna.fbcdn.net&_nc_cat=102&_nc_ohc=1GdzyyjrnAQAX_y3Ixl&edm=AP_V10EBAAAA&ccb=7-4&oh=4480b365fd6182c6d03af448ef67ff92&oe=61408795&_nc_sid=4f375e",
+      booking_url: "https://www.b8a.sg/book-a-slot/",
+      map_url:
+        "https://www.google.com/maps/place/b8A/@1.3434191,103.9393612,17z/data=!3m1!4b1!4m5!3m4!1s0x31da3dba2a61d3b3:0xaf9fa807fced780b!8m2!3d1.3434137!4d103.9415499",
+      instagram_url: "https://www.instagram.com/b8a.sg",
+      address: "6 Tampines St 92, S-528893",
+      phone: "8023 8313",
+      email: "boulder@b8a.sg",
+    }),
+    update(knex, {
       slug: "bff",
       website_url: "https://bffclimb.com",
       image_url:

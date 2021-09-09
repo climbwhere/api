@@ -80,8 +80,6 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     });
   }
 
-  console.log(sessions);
-
   const fitblocSessions = sessions.map<FitblocSession>((session) => ({
     starts_at: moment(session.starts_at).toDate(),
     ends_at: moment(session.ends_at).toDate(),
