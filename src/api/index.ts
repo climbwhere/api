@@ -27,7 +27,7 @@ const main = async () => {
       origin:
         process.env.NODE_ENV === "development"
           ? "*"
-          : ["https://www.climbwhere.sg", "https://climbwhere.triomic.dev/"],
+          : ["https://www.climbwhere.sg", "https://climbwhere.triomic.dev"],
     }),
   );
 
