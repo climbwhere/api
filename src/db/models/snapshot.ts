@@ -1,4 +1,5 @@
 import type { Session } from "./session";
+import type { Gym } from "./gym";
 
 export type Snapshot = {
   id: string;
@@ -8,6 +9,7 @@ export type Snapshot = {
 };
 
 export type SnapshotData = {
+  gyms?: Gym[];
   sessions?: {
     [name: string]:
       | { data: Session[]; error: undefined }

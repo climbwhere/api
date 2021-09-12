@@ -56,6 +56,9 @@ const main = async () => {
   const previousData = previousSnapshot?.data ?? {};
 
   const data: SnapshotData = {};
+
+  data.gyms = await db("gyms").select("*");
+
   results.forEach(({ resource, result }) => {
     if (result) {
       data[resource] = result;
@@ -65,7 +68,7 @@ const main = async () => {
   const changes = calculateChanges(previousData, data);
   console.log(JSON.stringify(changes, null, 4));
 
-  const numberOfChanges = flatMap(Object.values(changes), (d) => d.data).length;
+  const numberOfChanges = flatMap(changes.sessions, (d) => d.data).length;
 
   // Report errors
   let hasErrors = false;
