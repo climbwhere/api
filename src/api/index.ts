@@ -27,10 +27,7 @@ const main = async () => {
       origin:
         process.env.NODE_ENV === "development"
           ? "*"
-          : [
-              "https://www.climbwhere.sg",
-              "https://deploy-preview-11--elastic-franklin-9a8023.netlify.app",
-            ],
+          : ["https://www.climbwhere.sg", "https://climbwhere.triomic.dev/"],
     }),
   );
 
