@@ -52,7 +52,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     $(".bw-session").each((index, sessionElem) => {
       const name = $(".bw-session__name", sessionElem).text();
 
-      if (!name.includes("Entry - Rochor")) {
+      if (!name.includes("Rochor - Entry")) {
         return;
       }
 
