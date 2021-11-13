@@ -27,6 +27,19 @@ exports.seed = function (knex) {
       email: "contact@bffclimb.com",
     }),
     update(knex, {
+      slug: "boruda",
+      website_url: "https://boruda.sg",
+      image_url:
+        "https://static.wixstatic.com/media/c94d2d_24a1a9f7d6bc461dbdb03723666ebd82~mv2.jpg/v1/fill/w_800,h_800,al_c,q_85,usm_0.66_1.00_0.01/c94d2d_24a1a9f7d6bc461dbdb03723666ebd82~mv2.jpg",
+      booking_url: "https://boruda.sg/bookings",
+      map_url:
+        "https://www.google.com/maps/place/boruda+climbing/@1.2743065,103.8015258,17z/data=!3m1!4b1!4m5!3m4!1s0x31da1b146c0c318d:0x147cc4987acb4f82!8m2!3d1.2743011!4d103.8037145",
+      instagram_url: "https://www.instagram.com/boruda.sg/",
+      address: "991A Alexandra Rd, Singapore 119969",
+      phone: "6994 2325",
+      email: "info@boruda.sg",
+    }),
+    update(knex, {
       slug: "boulder-movement-downtown",
       website_url: "https://www.boulderm.com",
       image_url:

@@ -2,6 +2,7 @@ import boulderPlus from "./boulder-plus";
 import boulderWorld from "./boulder-world";
 import bff from "./bff";
 import b8a from "./b8a";
+import boruda from "./boruda";
 import oyeyo from "./oyeyo";
 import lighthouse from "./lighthouse";
 import zVertigo from "./z-vertigo";
@@ -29,6 +30,7 @@ const SCRAPERS = [
   { slug: "boulder-plus", scrape: boulderPlus },
   { slug: "bff", scrape: bff },
   { slug: "b8a", scrape: b8a },
+  { slug: "boruda", scrape: boruda },
   { slug: "oyeyo", scrape: oyeyo },
   { slug: "lighthouse", scrape: lighthouse },
   { slug: "z-vertigo", scrape: zVertigo },
