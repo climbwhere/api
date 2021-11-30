@@ -79,8 +79,6 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     spaces: session.spaces,
   }));
 
-  console.log("results", borudaSessions);
-
   return Promise.all(
     borudaSessions.map(async (borudaSession) =>
       insertOrUpdateSession(ctx.db, {
