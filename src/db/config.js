@@ -2,7 +2,7 @@ module.exports = {
   development: {
     client: "postgres",
     connection: {
-      database: "pocket",
+      database: "climbwhere",
       user: "postgres",
       password: "postgres",
     },

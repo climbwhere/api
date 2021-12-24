@@ -1,5 +1,5 @@
 {
-  "name": "pocket",
+  "name": "@climbwhere/api",
   "version": "0.0.1",
   "description": "Climbing gym slot scraper",
   "author": "Ravern Koh <ravernkoh@gmail.com>",
