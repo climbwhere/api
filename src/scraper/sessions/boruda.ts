@@ -53,6 +53,9 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     }
 
     const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
+    if (sessionId == null) {
+      return; 
+    }
     const $$ = cheerio.load(scheduleData.contents[sessionId].classAvailability);
 
     const slotsElem = $$(".hc_availability");
