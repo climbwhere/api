@@ -55,7 +55,9 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     return [];
   }
   return Promise.all<Session>(
-    res.data.map((session: BoulderPlusSession) => scrapeSession(ctx, gym, session)),
+    res.data.map((session: BoulderPlusSession) =>
+      scrapeSession(ctx, gym, session),
+    ),
   );
 };
 

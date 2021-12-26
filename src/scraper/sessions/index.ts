@@ -1,4 +1,5 @@
-import boulderPlus from "./boulder-plus";
+import boulderPlusAperia from "./boulder-plus-aperia";
+import boulderPlusChevrons from "./boulder-plus-chevrons";
 import boulderWorld from "./boulder-world";
 import bff from "./bff";
 import b8a from "./b8a";
@@ -27,7 +28,8 @@ type Result = {
 };
 
 const SCRAPERS = [
-  { slug: "boulder-plus", scrape: boulderPlus },
+  { slug: "boulder-plus-aperia", scrape: boulderPlusAperia },
+  { slug: "boulder-plus-chevrons", scrape: boulderPlusChevrons },
   { slug: "bff", scrape: bff },
   { slug: "b8a", scrape: b8a },
   { slug: "boruda", scrape: boruda },
