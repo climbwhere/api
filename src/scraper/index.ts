@@ -1,25 +1,15 @@
 import "dotenv/config";
 import "./config";
 
-import { isNil, isEmpty, flatMap } from "lodash";
+import { isNil, isEmpty } from "lodash";
 import axios from "axios";
 
 import bot from "../bot";
 import { connect } from "../db";
-import getLatestSnapshot from "../db/queries/getLatestSnapshot";
-import gyms from "./gyms";
-import sessions from "./sessions";
-import calculateChanges from "./shared/helpers/calculateChanges";
+import scrapeSessions from "./sessions";
 
-import type { SnapshotData } from "../db/models/snapshot";
+import type { SnapshotData, SnapshotSession } from "../db/models/snapshot";
 import type { Context } from "./context";
-
-const isProduction = process.env.NODE_ENV === "production";
-
-const SCRAPERS = [
-  { resource: "gyms", scrape: gyms },
-  { resource: "sessions", scrape: sessions },
-];
 
 const main = async () => {
   const adminBot = bot.create({
@@ -29,54 +19,22 @@ const main = async () => {
   });
 
   const db = connect();
-
-  //  const browser = await puppeteer.launch({
-  //    headless: isProduction,
-  //    defaultViewport: null,
-  //    args: isProduction ? ["--no-sandbox"] : [],
-  //  });
-
   const ctx: Context = {
     db,
-    // browser,
     http: axios,
     adminBot,
   };
 
-  const results = await Promise.all(
-    SCRAPERS.map(async ({ resource, scrape }) => {
-      const result = await scrape(ctx);
-      return { resource, result };
-    }),
-  );
-
-  // await browser.close();
-
-  const previousSnapshot = await getLatestSnapshot(ctx.db);
-  const previousData = previousSnapshot?.data ?? {};
-
   const data: SnapshotData = {};
-
   data.gyms = await db("gyms").select("*");
+  data.sessions = (await scrapeSessions(ctx)) as SnapshotSession;
 
-  results.forEach(({ resource, result }) => {
-    if (result) {
-      data[resource] = result;
-    }
-  });
-
-  const changes = calculateChanges(previousData, data);
-  console.log(JSON.stringify(changes, null, 4));
-
-  const numberOfChanges = flatMap(changes.sessions, (d) => d.data).length;
-
-  // Report errors
+  // Report scraper errors
   let hasErrors = false;
   const errors = Object.keys(data.sessions).filter(
     (gym) => !isNil(data.sessions[gym].error),
   );
-
-  if (!isEmpty(errors) && numberOfChanges > 0) {
+  if (!isEmpty(errors)) {
     await adminBot.sendToAdminChannel(
       "Scraper errors detected:",
       errors
@@ -84,6 +42,21 @@ const main = async () => {
         .join("\n"),
     );
     hasErrors = true;
+  }
+
+  // Warn for empty results
+  const gymsWithNoResults = [];
+  Object.keys(data.sessions).forEach((gym) => {
+    if (isEmpty(data.sessions[gym].data)) {
+      gymsWithNoResults.push(gym);
+    }
+  });
+
+  if (!isEmpty(gymsWithNoResults)) {
+    await adminBot.sendToAdminChannel(
+      "WARNING Scrapers without output:",
+      gymsWithNoResults.join("\n"),
+    );
   }
 
   await ctx.db("snapshots").insert({ has_errors: hasErrors, data });

@@ -8,11 +8,13 @@ export type Snapshot = {
   has_errors: boolean;
 };
 
+export type SnapshotSession = {
+  [name: string]:
+    | { data: Session[]; error: undefined }
+    | { data: undefined; error: { message: string } };
+};
+
 export type SnapshotData = {
   gyms?: Gym[];
-  sessions?: {
-    [name: string]:
-      | { data: Session[]; error: undefined }
-      | { data: undefined; error: { message: string } };
-  };
+  sessions?: SnapshotSession;
 };

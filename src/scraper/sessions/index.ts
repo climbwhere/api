@@ -17,7 +17,7 @@ import boulderMovementRochor from "./boulder-movement-rochor";
 import type { Context } from "../context";
 import { Session } from "../../db/models";
 
-type Result = {
+export type Result = {
   [slug: string]:
     | {
         data: Session[];
