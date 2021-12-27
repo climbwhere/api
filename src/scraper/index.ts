@@ -54,7 +54,7 @@ const main = async () => {
   // Ignore bff and lighthouse
   if (
     !isEmpty(
-      gymsWithNoResults.filter((gym) => ["bff", "lighthouse"].includes(gym)),
+      gymsWithNoResults.filter((gym) => !["bff", "lighthouse"].includes(gym)),
     )
   ) {
     await adminBot.sendToAdminChannel(
