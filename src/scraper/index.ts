@@ -51,8 +51,12 @@ const main = async () => {
       gymsWithNoResults.push(gym);
     }
   });
-
-  if (!isEmpty(gymsWithNoResults)) {
+  // Ignore bff and lighthouse
+  if (
+    !isEmpty(
+      gymsWithNoResults.filter((gym) => ["bff", "lighthouse"].includes(gym)),
+    )
+  ) {
     await adminBot.sendToAdminChannel(
       "WARNING Scrapers without output:",
       gymsWithNoResults.join("\n"),
