@@ -1,7 +1,8 @@
 import boulderPlusAperia from "./boulder-plus-aperia";
 import boulderPlusChevrons from "./boulder-plus-chevrons";
 import boulderWorld from "./boulder-world";
-import bff from "./bff";
+import bffBukitTimah from "./bff-bukit-timah";
+import bffBendemeer from "./bff-bendemeer";
 import b8a from "./b8a";
 import boruda from "./boruda";
 import oyeyo from "./oyeyo";
@@ -30,7 +31,8 @@ export type Result = {
 const SCRAPERS = [
   { slug: "boulder-plus-aperia", scrape: boulderPlusAperia },
   { slug: "boulder-plus-chevrons", scrape: boulderPlusChevrons },
-  { slug: "bff", scrape: bff },
+  { slug: "bff-bukit-timah", scrape: bffBukitTimah },
+  { slug: "bff-bendemeer", scrape: bffBendemeer },
   { slug: "b8a", scrape: b8a },
   { slug: "boruda", scrape: boruda },
   { slug: "oyeyo", scrape: oyeyo },
