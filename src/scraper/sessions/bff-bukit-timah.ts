@@ -77,17 +77,20 @@ function calculateSessionsFromData(
   // first, generate sessions with at least 1 slot available
   const slotsPerDay = availableSessionsData.CalendarData;
   const days = availableSessionsData.PagerData.Days;
+
   // For each day, get all slots
   days.forEach((dayString, indexOfDay) => {
     const sessionsOfDay = {};
     slotsPerDay.forEach((slot) => {
+      // NOTE: slotTime is used for processing time slots, and is not actually accurate
       const slotTime = slot.Hour.split("T")[1];
       const dataOfDay = slot.ClassesPerDay[indexOfDay];
       if (!isEmpty(dataOfDay)) {
         // Hours of the slot need to be derived from slot.Hours, then combined with the StartTime and EndTime
         const startTime = dataOfDay[0].StartTime.slice(0, -8).concat(slotTime);
         sessionsOfDay[slotTime] = {
-          starts_at: moment(startTime).toDate(),
+          // NOTE: Don't actually use slotTime, it is not accurate
+          starts_at: moment(dataOfDay[0].StartTime).toDate(),
           ends_at: moment(startTime).add(2, "hours").toDate(),
           spaces: 1,
         };
