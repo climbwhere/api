@@ -65,7 +65,7 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
   if (isWeekend) {
     lastDate = moment(firstDateOfClass, "YYYYMMDD").add(2, "days");
   } else {
-    lastDate = moment(firstDateOfClass, "YYYYMMDD").add(1, "week");
+    lastDate = moment(firstDateOfClass, "YYYYMMDD").add(5, "days");
   }
 
   const res = await axios.get(
@@ -87,6 +87,7 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
     return [];
   }
 
+  console.log(klass, res.data);
   if (res.data.data == null) {
     return [];
   }
