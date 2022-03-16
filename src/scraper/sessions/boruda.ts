@@ -48,13 +48,13 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
   $(".bw-session").each((index, sessionElem) => {
     const name = $(".bw-session__name", sessionElem).text();
 
-    if (name.includes("Class")) {
+    if (name.includes("Night Slots")) {
       return;
     }
 
     const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
     if (sessionId == null) {
-      return; 
+      return;
     }
     const $$ = cheerio.load(scheduleData.contents[sessionId].classAvailability);
 

@@ -6,6 +6,7 @@ import insertOrUpdateSession from "../../db/queries/insertOrUpdateSession";
 import type { Context } from "../context";
 
 type B8ASession = {
+  name: string;
   time_start: number;
   duration: number;
   size: number;
@@ -55,6 +56,7 @@ async function scrape(ctx: Context, slug: string): Promise<Session[]> {
 
   const sessions = sessionData
     .filter((session) => session.status === "AVAILABLE")
+    .filter((session) => session.size < 100)
     .map((session) => ({
       starts_at: moment.unix(session.time_start).toDate(),
       ends_at: moment

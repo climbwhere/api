@@ -87,7 +87,6 @@ async function processClass(klass, isWeekend): Promise<BoulderWorldSession[]> {
     return [];
   }
 
-  console.log(klass, res.data);
   if (res.data.data == null) {
     return [];
   }
