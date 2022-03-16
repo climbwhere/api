@@ -4,8 +4,15 @@ import type { Context } from "../context";
 import type { Handler } from "./types";
 
 export const index: Handler = (ctx: Context) => async (req, res) => {
-  const gyms = await ctx.db("gyms");
-
+  const gyms = await ctx
+    .db("gyms")
+    .select("*")
+    .whereNotIn("slug", [
+      "bff-bukit-timah",
+      "bff-bendemeer",
+      "boulder-plus-aperia",
+      "boulder-plus-chevrons",
+    ]);
   res.json({
     data: gyms,
   });

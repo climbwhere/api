@@ -48,25 +48,34 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
   $(".bw-session").each((index, sessionElem) => {
     const name = $(".bw-session__name", sessionElem).text();
 
-    if (name.includes("Night Slots")) {
+    if (!name.includes("Night Slots")) {
       return;
     }
+
+    let spaces = 0;
 
     const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
     if (sessionId == null) {
       return;
     }
-    const $$ = cheerio.load(scheduleData.contents[sessionId].classAvailability);
+    const classAvailability =
+      scheduleData.contents[sessionId].classAvailability;
+    if (classAvailability == null || classAvailability.length === 0) {
+      spaces = -1;
+    } else {
+      const $$ = cheerio.load(
+        scheduleData.contents[sessionId].classAvailability,
+      );
 
-    const slotsElem = $$(".hc_availability");
-    const waitlistElem = $$(".hc_waitlist");
+      const slotsElem = $$(".hc_availability");
+      const waitlistElem = $$(".hc_waitlist");
 
-    let spaces = 0;
-    if (waitlistElem.length === 0) {
-      if (slotsElem.length === 0) {
-        return;
+      if (waitlistElem.length === 0) {
+        if (slotsElem.length === 0) {
+          return;
+        }
+        spaces = parseInt(slotsElem.text().trim().slice(0, 2), 10);
       }
-      spaces = parseInt(slotsElem.text().trim().slice(0, 2), 10);
     }
 
     sessions.push({
@@ -81,6 +90,8 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     ends_at: moment(session.ends_at).toDate(),
     spaces: session.spaces,
   }));
+
+  console.log(borudaSessions);
 
   return Promise.all(
     borudaSessions.map(async (borudaSession) =>

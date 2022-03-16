@@ -26,7 +26,14 @@ const main = async () => {
   };
 
   const data: SnapshotData = {};
-  data.gyms = await db("gyms").select("*");
+  data.gyms = await db("gyms")
+    .select("*")
+    .whereNotIn("slug", [
+      "bff-bukit-timah",
+      "bff-bendemeer",
+      "boulder-plus-aperia",
+      "boulder-plus-chevrons",
+    ]);
   data.sessions = (await scrapeSessions(ctx)) as SnapshotSession;
 
   // Report scraper errors
