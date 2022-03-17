@@ -45,7 +45,7 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     res.data.class_sessions.substring(startIndex, endIndex),
   );
 
-  $(".bw-session").each((index, sessionElem) => {
+  $(".bw-session").each((_index, sessionElem) => {
     const name = $(".bw-session__name", sessionElem).text();
 
     if (!name.includes("Night Slots")) {
@@ -90,8 +90,6 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     ends_at: moment(session.ends_at).toDate(),
     spaces: session.spaces,
   }));
-
-  console.log(borudaSessions);
 
   return Promise.all(
     borudaSessions.map(async (borudaSession) =>

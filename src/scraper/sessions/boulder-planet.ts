@@ -45,25 +45,37 @@ const scrape = async (ctx: Context, slug: string): Promise<Session[]> => {
     res.data.class_sessions.substring(startIndex, endIndex),
   );
 
-  $(".bw-session").each((index, sessionElem) => {
+  $(".bw-session").each((_index, sessionElem) => {
     const name = $(".bw-session__name", sessionElem).text();
 
     if (!name.toUpperCase().includes("TIMESLOT")) {
       return;
     }
 
-    const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
-    const $$ = cheerio.load(scheduleData.contents[sessionId].classAvailability);
-
-    const slotsElem = $$(".hc_availability");
-    const waitlistElem = $$(".hc_waitlist");
-
     let spaces = 0;
-    if (waitlistElem.length === 0) {
-      if (slotsElem.length === 0) {
-        return;
+
+    const sessionId = $(sessionElem).attr("data-bw-widget-mbo-class-id");
+    if (sessionId == null) {
+      return;
+    }
+    const classAvailability =
+      scheduleData.contents[sessionId].classAvailability;
+    if (classAvailability == null || classAvailability.length === 0) {
+      spaces = -1;
+    } else {
+      const $$ = cheerio.load(
+        scheduleData.contents[sessionId].classAvailability,
+      );
+
+      const slotsElem = $$(".hc_availability");
+      const waitlistElem = $$(".hc_waitlist");
+
+      if (waitlistElem.length === 0) {
+        if (slotsElem.length === 0) {
+          return;
+        }
+        spaces = parseInt(slotsElem.text().trim().slice(0, 2), 10);
       }
-      spaces = parseInt(slotsElem.text().trim().slice(0, 2), 10);
     }
 
     sessions.push({
