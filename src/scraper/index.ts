@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "./config";
 
-import { isNil, isEmpty } from "lodash";
+// import { isNil, isEmpty } from "lodash";
 import axios from "axios";
 
 import bot from "../bot";
@@ -36,39 +36,39 @@ const main = async () => {
     ]);
   data.sessions = (await scrapeSessions(ctx)) as SnapshotSession;
 
-  // Report scraper errors
-  let hasErrors = false;
-  const errors = Object.keys(data.sessions).filter(
-    (gym) => !isNil(data.sessions[gym].error),
-  );
-  if (!isEmpty(errors)) {
-    await adminBot.sendToAdminChannel(
-      "Scraper errors detected:",
-      errors
-        .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
-        .join("\n"),
-    );
-    hasErrors = true;
-  }
+  // // Report scraper errors
+  // let hasErrors = false;
+  // const errors = Object.keys(data.sessions).filter(
+  //   (gym) => !isNil(data.sessions[gym].error),
+  // );
+  // if (!isEmpty(errors)) {
+  //   await adminBot.sendToAdminChannel(
+  //     "Scraper errors detected:",
+  //     errors
+  //       .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
+  //       .join("\n"),
+  //   );
+  //   hasErrors = true;
+  // }
 
-  // Warn for empty results
-  const gymsWithNoResults = [];
-  Object.keys(data.sessions).forEach((gym) => {
-    if (isEmpty(data.sessions[gym].data)) {
-      gymsWithNoResults.push(gym);
-    }
-  });
-  // Ignore bff and lighthouse
-  if (
-    !isEmpty(
-      gymsWithNoResults.filter((gym) => !["bff", "lighthouse"].includes(gym)),
-    )
-  ) {
-    await adminBot.sendToAdminChannel(
-      "WARNING Scrapers without output:",
-      gymsWithNoResults.join("\n"),
-    );
-  }
+  // // Warn for empty results
+  // const gymsWithNoResults = [];
+  // Object.keys(data.sessions).forEach((gym) => {
+  //   if (isEmpty(data.sessions[gym].data)) {
+  //     gymsWithNoResults.push(gym);
+  //   }
+  // });
+  // // Ignore bff and lighthouse
+  // if (
+  //   !isEmpty(
+  //     gymsWithNoResults.filter((gym) => !["bff", "lighthouse"].includes(gym)),
+  //   )
+  // ) {
+  //   await adminBot.sendToAdminChannel(
+  //     "WARNING Scrapers without output:",
+  //     gymsWithNoResults.join("\n"),
+  //   );
+  // }
 
   await ctx.db("snapshots").insert({ has_errors: hasErrors, data });
 
