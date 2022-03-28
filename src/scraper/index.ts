@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "./config";
 
-// import { isNil, isEmpty } from "lodash";
+import { isNil, isEmpty } from "lodash";
 import axios from "axios";
 
 import bot from "../bot";
@@ -36,22 +36,22 @@ const main = async () => {
     ]);
   data.sessions = (await scrapeSessions(ctx)) as SnapshotSession;
 
-  // // Report scraper errors
-  // let hasErrors = false;
-  // const errors = Object.keys(data.sessions).filter(
-  //   (gym) => !isNil(data.sessions[gym].error),
-  // );
-  // if (!isEmpty(errors)) {
-  //   await adminBot.sendToAdminChannel(
-  //     "Scraper errors detected:",
-  //     errors
-  //       .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
-  //       .join("\n"),
-  //   );
-  //   hasErrors = true;
-  // }
+  // Report scraper errors
+  let hasErrors = false;
+  const errors = Object.keys(data.sessions).filter(
+    (gym) => !isNil(data.sessions[gym].error),
+  );
+  if (!isEmpty(errors)) {
+    // await adminBot.sendToAdminChannel(
+    //   "Scraper errors detected:",
+    //   errors
+    //     .map((gym) => `${gym} - ${data.sessions[gym].error.message}`)
+    //     .join("\n"),
+    // );
+    hasErrors = true;
+  }
 
-  // // Warn for empty results
+  // Warn for empty results
   // const gymsWithNoResults = [];
   // Object.keys(data.sessions).forEach((gym) => {
   //   if (isEmpty(data.sessions[gym].data)) {
